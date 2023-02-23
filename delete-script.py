@@ -4,8 +4,8 @@ import os.path
 from os import path
 
 # path to ics file
-filePath = ""
-savePath = ""
+sourceFilePath = r""
+destinationFilePath = r""
 
 # dateRange in format <YYYY-MM-DD>
 # all events in this range remain in the ics file, all the others are deleted
@@ -13,11 +13,14 @@ savePath = ""
 rangeBegin = "2023-03-01"
 rangeEnd = "2023-09-30"
 
-#override the destination file if it exists
-overrideSaveFile = False
+#override the destination file if it exists (default = false)
+overrideExistingFile = False
 
 
-file = open(filePath)
+
+
+
+file = open(sourceFilePath)
 
 c = Calendar(file.read())
 print(file.name)
@@ -25,18 +28,20 @@ print(file.name)
 arrowBegin = arrow.get(rangeBegin)
 arrowEnd = arrow.get(rangeEnd)
 
-print("old Events: " + str(len(c.events)))
+print("events in source file: " + str(len(c.events)))
 newEvents = set()
 for x in c.events:
     if(x.begin < arrowEnd and x.begin > arrowBegin):
         newEvents.add(x)
 
-print("new Events: " + str(len(newEvents)))
+print("events to be saved: " + str(len(newEvents)))
 
 c.events = newEvents
-if(os.path.exists(savePath) and overrideSaveFile == False):
+if(os.path.exists(destinationFilePath) and overrideSaveFile == False):
     print("Destination file already exists, please configure the overrideSaveFile parameter or change the destination file path")
-elif (os.path.exists(savePath)):
-    open(savePath,"w").writelines(c)
+elif (os.path.exists(destinationFilePath)):
+    open(destinationFilePath,"w").writelines(c)
 else:
-    open(savePath,"x").writelines(c)
+    open(destinationFilePath,"x").writelines(c)
+
+print("saving successful!")
